@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 from os.path import expanduser
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 from imutils import paths
 
 from simplepreprocessor import SimplePreprocessor
@@ -12,12 +11,6 @@ from simpledatasetloader import SimpleDatasetLoader
 
 # path to input dataset
 DATASET = expanduser('~/dlcv/code/datasets/animals')
-
-# number of nearest neighbors for classification
-NEIGHBORS = 1
-
-# number of jobs for k-NN distance (-1 uses all available cores)
-NUM_JOBS = -1
 
 # get the list of image paths
 image_path_list = list(paths.list_images(DATASET))
@@ -50,11 +43,21 @@ labels = le.fit_transform(labels)
 (features_train, features_test, labels_train, labels_test) = train_test_split(
     data, labels, test_size=0.25, random_state=42)
 
-# train a k-NN classifier on the raw pixel intensities
-model = KNeighborsClassifier(n_neighbors=NEIGHBORS, n_jobs=NUM_JOBS)
-model.fit(features_train, labels_train)
+# loop over multiple regularizers
+for r in (None, "l1", "l2"):
+    # train a SGD classifier using a softmax loss function and the specified regularization function
+    print(f'training model with {r} penalty')
+    model = SGDClassifier(
+        loss="log_loss",
+        penalty=r,
+        max_iter=100, # epochs
+        learning_rate="constant",
+        tol=1e-3,
+        eta0=0.01,
+        random_state=12
+    )
+    model.fit(features_train, labels_train)
 
-# evaluate the k-NN classifier
-print(classification_report(labels_test, # labels true
-                            model.predict(features_test), # labels predicted
-                            target_names=le.classes_))
+    # evaluate the classifier
+    acc = model.score(features_test, labels_test)
+    print(f'{r} penalty accuracy: {acc*100:.2f}%')
