@@ -50,7 +50,7 @@ for r in (None, "l1", "l2"):
     model = SGDClassifier(
         loss="log_loss",
         penalty=r,
-        max_iter=100, # epochs
+        max_iter=60, # epochs
         learning_rate="constant",
         tol=1e-3,
         eta0=0.01,
