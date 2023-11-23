@@ -1,3 +1,4 @@
+import tensorflow as tf
 import numpy as np
 import cv2
 import os
@@ -36,3 +37,21 @@ class SimpleDatasetLoader:
 
         # return a tuple of the data and labels
         return (np.array(data_list), np.array(label_list))
+
+class SimplePreprocessor:
+    def __init__(self, width, height, inter=cv2.INTER_AREA):
+        self.width = width   # target image width
+        self.height = height # target image height
+        self.inter = inter   # interpolation method to use when resizing
+
+    def preprocess(self, image):
+        # resize the image to a fixed size, ignoring the aspect ratio
+        return cv2.resize(image, (self.width, self.height), interpolation=self.inter)
+
+class ImageToArrayPreprocessor:
+    def __init__(self, data_format=None):
+        self.data_format = data_format # image data format
+
+    def preprocess(self, image):
+        # apply the utility function that correctly rearranges the dimensions of the image
+        return tf.keras.preprocessing.image.img_to_array(image, data_format=self.data_format)
