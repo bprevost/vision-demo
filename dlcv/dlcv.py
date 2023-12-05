@@ -1,3 +1,6 @@
+# Inspired by Deep Learning for Computer Vision with Python [Rosebrock]
+# Support classes for the demos
+
 import tensorflow as tf
 import numpy as np
 import cv2
