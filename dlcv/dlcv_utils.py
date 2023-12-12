@@ -48,7 +48,7 @@ class SimplePreprocessor:
         self.inter = inter   # interpolation method to use when resizing
 
     def preprocess(self, image):
-        # resize the image to a fixed size, ignoring the aspect ratio
+        # resize the image to a fixed size and ignore the aspect ratio
         return cv2.resize(image, (self.width, self.height), interpolation=self.inter)
 
 class ImageToArrayPreprocessor:
